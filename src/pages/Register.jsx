@@ -6,17 +6,26 @@ const Register = () => {
   const navigate = useNavigate();
   const onFinish = async (values) => {
     const { name, email, password } = values;
-    const response = await createUser(name, email, password);
-    if (response) {
-      notification.success({
-        message: "User created successfully",
-        description: "You can now login with your credentials",
-      });
-      navigate("/login");
-    } else {
+    try {
+      const response = await createUser(name, email, password);
+      if (response) {
+        notification.success({
+          message: "User created successfully",
+          description: "You can now login with your credentials",
+        });
+        navigate("/login");
+      } else {
+        notification.error({
+          message: "Something went wrong",
+          description: "Please try again later",
+        });
+      }
+    } catch (error) {
       notification.error({
-        message: "Something went wrong",
-        description: "Please try again later",
+        message: "Registration failed",
+        description:
+          error?.response?.data?.message ||
+          "Cannot connect to server. Please try again later.",
       });
     }
   };
