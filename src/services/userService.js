@@ -74,8 +74,13 @@ const handleLoginService = async (email, password) => {
 }
 const getUserService = async () => {
     try {
-        const user = await User.find();
-        return user;
+        // k bao gồm mật khẩu
+        const user = await User.find({}).select("-password");
+        return {
+            EC: 0,
+            EM: "Lấy danh sách user thành công",
+            data: user
+        }
     } catch (error) {
         console.log(error);
         return null;
