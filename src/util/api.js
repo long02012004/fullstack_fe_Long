@@ -17,7 +17,6 @@ const loginUser = (email, password) => {
 const getUsers = () => {
   const URL_API = "/v1/api/users";
   return axiosInstance.get(URL_API);
-}
+};
 
 export { createUser, loginUser, getUsers };
-

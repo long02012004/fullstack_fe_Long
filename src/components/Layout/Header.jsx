@@ -6,12 +6,31 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import React from "react";
+import { AuthContext } from "../Context/AuthContext.jsx";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { auth, setAuth } = React.useContext(AuthContext);
+  console.log(auth);
   const [current, setCurrent] = useState("mail");
   const onClick = (e) => {
     console.log("click ", e);
-    setCurrent(e.key);
+    if (e.key === "Logout") {
+      localStorage.removeItem("access_token");
+      setAuth({
+        isAuthenticated: false,
+        user: {
+          email: "",
+          name: "",
+        },
+      });
+      setCurrent("Home");
+      navigate("/");
+    } else {
+      setCurrent(e.key);
+    }
   };
   const items = [
     {
@@ -19,24 +38,53 @@ const Header = () => {
       key: "Home",
       icon: <MailOutlined />,
     },
+    ...(auth?.isAuthenticated
+      ? [
+          {
+            label: <Link to="/user">Người dùng</Link>,
+            key: "User",
+            icon: <UserAddOutlined />,
+          },
+        ]
+      : []),
     {
-      label: <Link to="/user">Người dùng</Link>,
-      key: "User",
-      icon: <UserAddOutlined />,
-    },
-    {
-      label: "Quang Long",
+      label: `Xin chào ${auth?.user?.name || "Khách"}`,
       key: "SubMenu",
       icon: <SettingOutlined />,
       children: [
-        {
-          label: "Đăng nhập",
-          key: "Login",
-        },
-        {
-          label: "Đăng xuất",
-          key: "Logout",
-        },
+        ...(auth?.isAuthenticated
+          ? [
+              {
+                label: (
+                  <span
+                    onClick={() => {
+                      localStorage.clear("access_token");
+                      setAuth({
+                        isAuthenticated: false,
+                        user: {
+                          email: "",
+                          name: "",
+                        },
+                      });
+                      navigate("/");
+                    }}
+                  >
+                    Đăng xuất
+                  </span>
+                ),
+                key: "Logout",
+              },
+            ]
+          : [
+              {
+                label: <Link to="/login">Đăng nhập</Link>,
+                key: "Login",
+              },
+              {
+                label: <Link to="/register">Đăng ký</Link>,
+                key: "Register",
+              },
+            ]),
       ],
     },
   ];

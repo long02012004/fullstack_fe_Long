@@ -8,7 +8,12 @@ const Register = () => {
     const { name, email, password } = values;
     try {
       const response = await createUser(name, email, password);
-      if (response) {
+      if (response && response.data && response.data.EC !== undefined && response.data.EC !== 0) {
+        notification.error({
+          message: "Registration failed",
+          description: response.data.EM || "Email already exists or invalid data.",
+        });
+      } else if (response) {
         notification.success({
           message: "User created successfully",
           description: "You can now login with your credentials",
